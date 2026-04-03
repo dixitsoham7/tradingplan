@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Trading Plan</title>
 <style>
 :root{
@@ -12,84 +14,131 @@
   --a:#7a4800;--abg:#fef2d8;
   --b:#174e82;--bbg:#e6f0fb;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.hdr{background:#18181e;padding:0 20px;display:flex;align-items:stretch;justify-content:space-between;min-height:62px;position:sticky;top:0;z-index:99;}
-.hdr-left{display:flex;align-items:center;gap:16px;}
-.hdr-logo{font-size:13px;font-weight:700;color:#fff;letter-spacing:.04em;}
-.hdr-week{font-size:11px;color:rgba(255,255,255,.35);padding:0 14px;border-left:1px solid rgba(255,255,255,.08);}
-.hdr-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.hdr-score{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.02em;}
-.hdr-status{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;transition:color .4s;}
-.hdr-right{display:flex;align-items:center;}
-.hdr-pct{font-size:24px;font-weight:800;transition:color .4s;}
-.hdr-pct-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;text-align:right;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── HEADER ── */
+.hdr{background:#18181e;padding:0 16px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;min-height:56px;position:sticky;top:0;z-index:99;gap:8px;}
+.hdr-left{display:flex;flex-direction:column;}
+.hdr-logo{font-size:12px;font-weight:700;color:#fff;letter-spacing:.04em;white-space:nowrap;}
+.hdr-week{font-size:10px;color:rgba(255,255,255,.32);margin-top:1px;}
+.hdr-center{text-align:center;}
+.hdr-score{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1;}
+.hdr-status{font-size:9px;letter-spacing:.07em;text-transform:uppercase;transition:color .4s;display:none;}
+.hdr-right{text-align:right;}
+.hdr-pct{font-size:20px;font-weight:800;transition:color .4s;}
+.hdr-pct-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.05em;}
 .week-bar{height:4px;background:rgba(255,255,255,.08);}
 .week-bar-fill{height:100%;transition:width .5s,background .4s;}
-.page{max-width:880px;margin:0 auto;padding:20px 16px 60px;}
-.sec{margin-bottom:22px;}
-.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:12px;}
-.card{background:var(--card);border-radius:14px;border:.5px solid var(--border);padding:18px 20px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.shops{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+
+@media(min-width:480px){
+  .hdr{padding:0 20px;min-height:60px;}
+  .hdr-logo{font-size:13px;}
+  .hdr-week{font-size:11px;}
+  .hdr-score{font-size:24px;}
+  .hdr-pct{font-size:24px;}
+  .hdr-status{display:block;}
+}
+
+/* ── PAGE ── */
+.page{max-width:880px;margin:0 auto;padding:14px 12px 60px;}
+@media(min-width:480px){.page{padding:20px 16px 60px;}}
+.sec{margin-bottom:18px;}
+@media(min-width:480px){.sec{margin-bottom:22px;}}
+.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px;}
+.card{background:var(--card);border-radius:14px;border:.5px solid var(--border);padding:14px 16px;}
+@media(min-width:480px){.card{padding:18px 20px;}}
+
+/* ── GRIDS ── mobile-first: single col → 2-col at 560px */
+.g2{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:560px){.g2{grid-template-columns:1fr 1fr;}}
+.shops{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px;}
+@media(min-width:560px){.shops{grid-template-columns:1fr 1fr;margin-bottom:22px;}}
+
+/* ── SHOP CARDS ── */
 .shop{border-radius:14px;border:.5px solid var(--border);overflow:hidden;}
-.sh{padding:12px 16px 10px;}
+.sh{padding:11px 14px 9px;}
 .sh.g{background:var(--gbg);} .sh.b{background:var(--bbg);}
 .sh-name{font-size:13px;font-weight:700;}
 .sh.g .sh-name{color:var(--g);} .sh.b .sh-name{color:var(--b);}
 .sh-inst{font-size:10px;margin-top:1px;opacity:.65;}
 .sh.g .sh-inst{color:var(--g);} .sh.b .sh-inst{color:var(--b);}
-.sb{background:var(--card);padding:14px 16px;}
+.sb{background:var(--card);padding:12px 14px;}
+@media(min-width:480px){.sb{padding:14px 16px;}}
 .mb-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
 .mb-cap{font-weight:700;}
 .mb-bg{background:var(--faint);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
 .mb-fill{height:100%;border-radius:20px;transition:width .4s;}
 .mb-sub{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
-.sh-row{display:flex;justify-content:space-between;align-items:center;margin:10px 0 6px;}
+.sh-row{display:flex;justify-content:space-between;align-items:center;margin:10px 0 8px;}
 .sh-lbl{font-size:11px;color:var(--muted);}
-.sh-inp{width:80px;padding:5px 8px;border:.5px solid var(--border);border-radius:8px;font-size:15px;font-weight:700;color:var(--text);background:var(--faint);outline:none;text-align:center;}
+.sh-inp{width:88px;min-height:44px;padding:6px 8px;border:.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:700;color:var(--text);background:var(--faint);outline:none;text-align:center;touch-action:manipulation;}
 .sh-inp:focus{border-color:var(--text);}
 .sh-status{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
 .st-open{background:var(--faint);color:var(--muted);}
 .st-done{background:var(--gbg);color:var(--g);}
 .sh-pct{font-size:10px;color:var(--muted);margin-top:5px;}
-.mission{border-radius:14px;padding:24px;text-align:center;background:var(--gbg);margin-bottom:22px;border:.5px solid #a8d8b4;}
-.mission h2{font-size:20px;font-weight:800;color:var(--g);margin-bottom:6px;}
-.mission p{font-size:13px;color:#3a7a48;line-height:1.6;}
-.itabs{display:flex;gap:6px;margin-bottom:14px;}
-.itab{padding:7px 16px;border-radius:20px;border:.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);}
+
+/* ── MISSION COMPLETE ── */
+.mission{border-radius:14px;padding:20px 16px;text-align:center;background:var(--gbg);margin-bottom:18px;border:.5px solid #a8d8b4;}
+.mission h2{font-size:18px;font-weight:800;color:var(--g);margin-bottom:6px;}
+@media(min-width:480px){.mission h2{font-size:20px;}}
+.mission p{font-size:12px;color:#3a7a48;line-height:1.6;}
+
+/* ── PRE-TRADE CALC ── */
+.itabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.itab{padding:8px 16px;border-radius:20px;border:.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);background:var(--card);touch-action:manipulation;min-height:36px;display:flex;align-items:center;}
 .itab.on{background:var(--text);color:#fff;border-color:var(--text);}
+.calc-inner{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:480px){.calc-inner{grid-template-columns:1fr 1fr;}}
 .irow{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .irow label{font-size:12px;color:var(--muted);flex:1;}
-.irow input{width:90px;padding:7px 10px;border:.5px solid var(--border);border-radius:8px;font-size:15px;font-weight:700;color:var(--text);background:var(--faint);outline:none;text-align:center;}
+.irow input{width:90px;min-height:44px;padding:6px 10px;border:.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:700;color:var(--text);background:var(--faint);outline:none;text-align:center;touch-action:manipulation;}
 .irow input:focus{border-color:var(--text);}
 .dn{display:flex;gap:6px;}
-.dnb{flex:1;padding:7px;border:.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;background:var(--faint);color:var(--muted);}
+.dnb{flex:1;min-height:44px;padding:8px 6px;border:.5px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;background:var(--faint);color:var(--muted);touch-action:manipulation;display:flex;align-items:center;justify-content:center;}
 .dnb.day{background:var(--gbg);border-color:#a8d8b4;color:var(--g);}
 .dnb.night{background:#f0ecfa;border-color:#c4b4ee;color:#4a2e8a;}
-.rc{border-radius:12px;padding:16px 18px;margin-top:14px;}
+.calc-meta{display:flex;flex-direction:column;justify-content:center;gap:8px;}
+@media(min-width:480px){.calc-meta{padding-left:8px;}}
+
+/* ── RESULT CARD ── */
+.rc{border-radius:12px;padding:14px 16px;margin-top:14px;}
 .rc.good{background:var(--gbg);} .rc.warn{background:var(--abg);} .rc.bad{background:var(--rbg);}
-.rc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+@media(min-width:480px){.rc-grid{grid-template-columns:repeat(4,1fr);}}
 .rci{background:rgba(255,255,255,.65);border-radius:8px;padding:9px 10px;}
 .rci-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
-.rci-val{font-size:17px;font-weight:700;}
+.rci-val{font-size:16px;font-weight:700;}
+@media(min-width:480px){.rci-val{font-size:17px;}}
 .rci-val.g{color:var(--g);} .rci-val.r{color:var(--r);}
-.lg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
-.lb{border-radius:10px;padding:12px 8px;text-align:center;border:1.5px solid transparent;}
+
+/* ── LOT GRID ── always 3 cols */
+.lg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;}
+@media(min-width:480px){.lg{gap:8px;}}
+.lb{border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid transparent;}
+@media(min-width:480px){.lb{padding:12px 8px;}}
 .lb.ok{background:rgba(255,255,255,.6);border-color:rgba(42,110,56,.2);}
 .lb.best{background:#fff;border-color:var(--g);box-shadow:0 0 0 3px rgba(42,110,56,.12);}
 .lb.no{background:rgba(255,255,255,.35);border-color:rgba(160,40,40,.15);opacity:.5;}
-.lb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
-.lb-num{font-size:22px;font-weight:800;}
+.lb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px;}
+.lb-num{font-size:20px;font-weight:800;}
+@media(min-width:480px){.lb-num{font-size:22px;}}
 .lb.best .lb-num{color:var(--g);} .lb.no .lb-num{color:var(--r);}
-.lb-rs{font-size:11px;color:var(--muted);margin-top:2px;}
-.lb-pct{font-size:10px;font-weight:600;margin-top:2px;}
+.lb-rs{font-size:10px;color:var(--muted);margin-top:2px;}
+.lb-pct{font-size:9px;font-weight:600;margin-top:2px;}
+@media(min-width:480px){.lb-pct{font-size:10px;}}
 .lb.best .lb-pct{color:var(--g);}
+.struct-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .sbadge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
 .sb-n{background:var(--gbg);color:var(--g);}
 .sb-h{background:#f0ecfa;color:#4a2e8a;}
-.sptog{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:.5px solid var(--border);cursor:pointer;}
+
+/* ── SPREAD ── */
+.sptog{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:.5px solid var(--border);cursor:pointer;touch-action:manipulation;min-height:36px;}
 .sptog label{font-size:12px;color:var(--muted);cursor:pointer;}
+.sptog input[type=checkbox]{width:18px;height:18px;cursor:pointer;flex-shrink:0;}
 .spf{padding-top:10px;}
 .qb{background:var(--faint);border-radius:10px;height:8px;overflow:hidden;margin:5px 0 4px;}
 .qbf{height:100%;border-radius:10px;transition:width .3s,background .3s;}
@@ -101,30 +150,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .spv.pass{background:var(--gbg);color:var(--g);}
 .spv.warn{background:var(--abg);color:var(--a);}
 .spv.fail{background:var(--rbg);color:var(--r);}
-.slt{width:100%;border-collapse:collapse;font-size:12px;}
-.slt th{background:var(--faint);padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:.5px solid var(--border);text-align:left;}
-.slt td{padding:8px 12px;border-bottom:.5px solid var(--border);}
-.slt tr:last-child td{border-bottom:none;}
-.bdg{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.slt,.pt{width:100%;border-collapse:collapse;font-size:12px;min-width:280px;}
+.slt th,.pt th{background:var(--faint);padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:.5px solid var(--border);text-align:left;white-space:nowrap;}
+.slt td,.pt td{padding:8px 12px;border-bottom:.5px solid var(--border);}
+.slt tr:last-child td,.pt tr:last-child td{border-bottom:none;}
+.bdg{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;}
 .b3{background:var(--gbg);color:var(--g);}
 .b2{background:var(--abg);color:var(--a);}
 .b1{background:var(--rbg);color:var(--r);}
 .bx{background:var(--faint);color:var(--muted);}
-.pt{width:100%;border-collapse:collapse;font-size:12px;}
-.pt th{background:var(--faint);padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:.5px solid var(--border);text-align:left;}
-.pt td{padding:8px 12px;border-bottom:.5px solid var(--border);}
-.pt tr:last-child td{border-bottom:none;}
 .hi{font-weight:700;color:var(--g);}
 .lo{color:var(--muted);}
 .danger{font-weight:700;color:var(--r);}
-.btnrow{display:flex;gap:8px;margin-top:12px;}
-.bsave{background:var(--text);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;}
-.breset{background:var(--card);color:var(--muted);border:.5px solid var(--border);padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;}
-@media(max-width:600px){.shops,.g2{grid-template-columns:1fr;}.rc-grid{grid-template-columns:1fr 1fr;}.lg{grid-template-columns:1fr 1fr 1fr;}}
+
+/* ── BOTTOM BAR ── */
+.bot-bar{background:var(--card);border-radius:14px;border:.5px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.bot-note{font-size:11px;color:var(--muted);}
+.btnrow{display:flex;gap:8px;}
+.bsave{background:var(--text);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;min-height:44px;touch-action:manipulation;}
+.breset{background:var(--card);color:var(--muted);border:.5px solid var(--border);padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;min-height:44px;touch-action:manipulation;}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-logo">Trading Plan</div>
@@ -132,46 +184,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="hdr-center">
     <div class="hdr-score" id="hdrScore">₹0</div>
-    <div class="hdr-status" id="hdrStatus" style="color:rgba(255,255,255,.3);">Shops open — let the setup come</div>
+    <div class="hdr-status" id="hdrStatus" style="color:rgba(255,255,255,.3);">Shops open — let setup come</div>
   </div>
-  <div class="hdr-right" style="flex-direction:column;align-items:flex-end;justify-content:center;">
+  <div class="hdr-right">
     <div class="hdr-pct" id="hdrPct" style="color:rgba(255,255,255,.35);">0%</div>
-    <div class="hdr-pct-lbl">of week done</div>
+    <div class="hdr-pct-lbl">of week</div>
   </div>
 </div>
-<div class="week-bar"><div class="week-bar-fill" id="wbf" style="width:0%;background:#3a9e4e;"></div></div>
+<div class="week-bar"><div class="week-bar-fill" id="wbf" style="width:0%;background:var(--gbar);"></div></div>
 
 <div class="page">
 
 <!-- SHOPS -->
 <div class="shops">
   <div class="shop">
-    <div class="sh g"><div class="sh-name">Nifty shop</div><div class="sh-inst">Options selling · 2 lots base · ₹130/pt</div></div>
+    <div class="sh g">
+      <div class="sh-name">Nifty shop</div>
+      <div class="sh-inst">Options selling · 2 lots base · ₹130/pt</div>
+    </div>
     <div class="sb">
       <div class="mb-row"><span class="mb-cap" id="nCap">0 pts</span><span style="color:var(--muted)">target 115 pts</span></div>
       <div class="mb-bg"><div class="mb-fill" id="nBar" style="width:0%;background:var(--gbar);"></div></div>
-      <div class="mb-sub"><span id="nRs">₹0</span><span>₹14,950</span></div>
-      <div class="sh-row"><div class="sh-lbl">Pts captured this week</div><input type="number" class="sh-inp" id="nInp" value="0" min="0" oninput="upd()"></div>
+      <div class="mb-sub"><span id="nRs">₹0 captured</span><span>₹14,950</span></div>
+      <div class="sh-row">
+        <div class="sh-lbl">Pts captured this week</div>
+        <input type="number" inputmode="numeric" class="sh-inp" id="nInp" value="0" min="0" oninput="upd()">
+      </div>
       <span class="sh-status st-open" id="nStat">Open</span>
-      <div class="sh-pct" id="nPctLine" style="margin-top:6px;">0% of target · 0.00% of capital</div>
+      <div class="sh-pct" id="nPctLine">0% of target · 0.00% of capital</div>
     </div>
   </div>
+
   <div class="shop">
-    <div class="sh b"><div class="sh-name">NatGas shop</div><div class="sh-inst">Options · Mini / Regular · setup-based</div></div>
+    <div class="sh b">
+      <div class="sh-name">NatGas shop</div>
+      <div class="sh-inst">Options · Mini / Regular · setup-based</div>
+    </div>
     <div class="sb">
       <div class="mb-row"><span class="mb-cap" id="gCap">₹0</span><span style="color:var(--muted)">target ₹3,800</span></div>
       <div class="mb-bg"><div class="mb-fill" id="gBar" style="width:0%;background:#378ADD;"></div></div>
       <div class="mb-sub"><span id="gPct">0% done</span><span>₹3,800</span></div>
-      <div class="sh-row"><div class="sh-lbl">₹ captured this week</div><input type="number" class="sh-inp" id="gInp" value="0" min="0" oninput="upd()"></div>
+      <div class="sh-row">
+        <div class="sh-lbl">₹ captured this week</div>
+        <input type="number" inputmode="numeric" class="sh-inp" id="gInp" value="0" min="0" oninput="upd()">
+      </div>
       <span class="sh-status st-open" id="gStat">Open</span>
-      <div class="sh-pct" id="gPctLine" style="margin-top:6px;">0% of target · 0.00% of capital</div>
+      <div class="sh-pct" id="gPctLine">0% of target · 0.00% of capital</div>
     </div>
   </div>
 </div>
 
-<div id="missionDiv" style="display:none;" class="mission sec">
-  <h2>Mission complete — both shops closed</h2>
-  <p>₹18,750 captured this week. No more trades.<br>Protect what you built. See you next week.</p>
+<div id="mDiv" class="mission sec" style="display:none;">
+  <h2>Mission complete — shops closed</h2>
+  <p>₹18,750 captured this week. No more trades.<br>Protect what you built.</p>
 </div>
 
 <!-- PRE-TRADE CALC -->
@@ -183,10 +248,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="itab" onclick="sI('mini',this)">NG mini</div>
       <div class="itab" onclick="sI('reg',this)">NG regular</div>
     </div>
-    <div class="g2">
+
+    <div class="calc-inner">
       <div>
-        <div class="irow"><label>Stop loss (points)</label><input type="number" id="slI" value="30" min="1" max="200" oninput="cT()"></div>
-        <div class="irow"><label>Target (points)</label><input type="number" id="tgI" value="50" min="1" max="500" oninput="cT()"></div>
+        <div class="irow"><label>Stop loss (points)</label><input type="number" inputmode="decimal" id="slI" value="30" min="1" max="200" oninput="cT()"></div>
+        <div class="irow"><label>Target (points)</label><input type="number" inputmode="decimal" id="tgI" value="50" min="1" max="500" oninput="cT()"></div>
         <div class="irow">
           <label>Session</label>
           <div class="dn">
@@ -195,12 +261,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;justify-content:center;gap:8px;padding-left:6px;">
-        <div style="font-size:11px;color:var(--muted);">Instrument: <strong id="iLbl" style="color:var(--text)">Nifty options</strong></div>
-        <div style="font-size:11px;color:var(--muted);">Value per point: <strong id="rLbl" style="color:var(--text)">₹65/lot</strong></div>
-        <div style="font-size:11px;color:var(--muted);">Max trade risk: <strong style="color:var(--text)">₹4,500 · 0.5% capital</strong></div>
+      <div class="calc-meta">
+        <div style="font-size:11px;color:var(--muted);">Instrument<br><strong id="iLbl" style="color:var(--text);font-size:12px;">Nifty options</strong></div>
+        <div style="font-size:11px;color:var(--muted);">Value per point<br><strong id="rLbl" style="color:var(--text);font-size:12px;">₹65/lot</strong></div>
+        <div style="font-size:11px;color:var(--muted);">Max trade risk<br><strong style="color:var(--text);font-size:12px;">₹4,500 · 0.5% capital</strong></div>
       </div>
     </div>
+
     <div class="rc good" id="rcCard">
       <div class="rc-grid">
         <div class="rci"><div class="rci-lbl">Risk / lot</div><div class="rci-val r" id="rcRL">₹1,950</div></div>
@@ -208,21 +275,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="rci"><div class="rci-lbl">R : R</div><div class="rci-val" id="rcRR">1 : 1.7</div></div>
         <div class="rci"><div class="rci-lbl">Min win rate</div><div class="rci-val" id="rcBW">37%</div></div>
       </div>
-      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">Lot sizing — star = recommended</div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;">Lot sizing — ★ = recommended</div>
       <div class="lg" id="lgDiv"></div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div class="struct-line">
         <span style="font-size:12px;color:var(--muted);">Structure:</span>
         <span class="sbadge sb-n" id="sBadge">Intraday — naked OK</span>
       </div>
     </div>
+
     <div class="sptog" onclick="tSp()">
       <input type="checkbox" id="spCb" onclick="event.stopPropagation();tSp()">
-      <label>Spread trade — check credit quality</label>
+      <label for="spCb">Spread trade — check credit quality</label>
     </div>
     <div id="spDiv" style="display:none;" class="spf">
-      <div class="irow"><label>Spread width (pts)</label><input type="number" id="spW" value="200" min="5" step="5" oninput="cSp()"></div>
-      <div class="irow"><label>Net credit (pts)</label><input type="number" id="spC" value="80" min="1" step="1" oninput="cSp()"></div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);"><span>Credit quality: <strong id="spPL" style="color:var(--text)">40%</strong></span><span>Need ≥ 40%</span></div>
+      <div class="irow"><label>Spread width (pts)</label><input type="number" inputmode="decimal" id="spW" value="200" min="5" step="5" oninput="cSp()"></div>
+      <div class="irow"><label>Net credit (pts)</label><input type="number" inputmode="decimal" id="spC" value="80" min="1" oninput="cSp()"></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+        <span>Credit quality: <strong id="spPL" style="color:var(--text)">40%</strong></span>
+        <span>Need ≥ 40%</span>
+      </div>
       <div class="qb"><div class="qbf" id="spQb" style="width:40%"></div></div>
       <div class="spg">
         <div class="spt"><div class="spt-lbl">Max profit</div><div class="spt-val" id="spMx">₹10,400</div></div>
@@ -238,54 +309,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div>
     <div class="sec-title">SL → lots reference</div>
     <div class="card" style="padding:0;overflow:hidden;">
-      <table class="slt">
-        <thead><tr><th>Instrument</th><th>SL range</th><th>Lots</th></tr></thead>
-        <tbody>
-          <tr><td>Nifty</td><td>≤ 23 pts</td><td><span class="bdg b3">3 lots</span></td></tr>
-          <tr><td>Nifty</td><td>24 – 34 pts</td><td><span class="bdg b2">2 lots ★</span></td></tr>
-          <tr><td>Nifty</td><td>35 – 69 pts</td><td><span class="bdg b1">1 lot</span></td></tr>
-          <tr><td>Nifty</td><td>&gt; 69 pts</td><td><span class="bdg bx">Skip</span></td></tr>
-          <tr style="border-top:.5px solid var(--border)"><td>NG Mini</td><td>≤ 6 pts</td><td><span class="bdg b3">3 lots</span></td></tr>
-          <tr><td>NG Mini</td><td>7 – 9 pts</td><td><span class="bdg b2">2 lots</span></td></tr>
-          <tr><td>NG Mini</td><td>10 – 18 pts</td><td><span class="bdg b1">1 lot</span></td></tr>
-          <tr><td>NG Mini</td><td>&gt; 18 pts</td><td><span class="bdg bx">Skip</span></td></tr>
-          <tr style="border-top:.5px solid var(--border)"><td>NG Regular</td><td>≤ 3 pts</td><td><span class="bdg b2">1 lot</span></td></tr>
-          <tr><td>NG Regular</td><td>&gt; 3 pts</td><td><span class="bdg bx">Use Mini</span></td></tr>
-        </tbody>
-      </table>
+      <div class="tbl-wrap">
+        <table class="slt">
+          <thead><tr><th>Instrument</th><th>SL range</th><th>Lots</th></tr></thead>
+          <tbody>
+            <tr><td>Nifty</td><td>≤ 23 pts</td><td><span class="bdg b3">3 lots</span></td></tr>
+            <tr><td>Nifty</td><td>24 – 34 pts</td><td><span class="bdg b2">2 lots ★</span></td></tr>
+            <tr><td>Nifty</td><td>35 – 69 pts</td><td><span class="bdg b1">1 lot</span></td></tr>
+            <tr><td>Nifty</td><td>&gt; 69 pts</td><td><span class="bdg bx">Skip</span></td></tr>
+            <tr style="border-top:.5px solid var(--border)"><td>NG Mini</td><td>≤ 6 pts</td><td><span class="bdg b3">3 lots</span></td></tr>
+            <tr><td>NG Mini</td><td>7 – 9 pts</td><td><span class="bdg b2">2 lots</span></td></tr>
+            <tr><td>NG Mini</td><td>10 – 18 pts</td><td><span class="bdg b1">1 lot</span></td></tr>
+            <tr><td>NG Mini</td><td>&gt; 18 pts</td><td><span class="bdg bx">Skip</span></td></tr>
+            <tr style="border-top:.5px solid var(--border)"><td>NG Regular</td><td>≤ 3 pts</td><td><span class="bdg b2">1 lot</span></td></tr>
+            <tr><td>NG Regular</td><td>&gt; 3 pts</td><td><span class="bdg bx">Use Mini</span></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
   <div>
     <div class="sec-title">% thinking — every capture in context</div>
     <div class="card" style="padding:0;overflow:hidden;">
-      <table class="pt">
-        <thead><tr><th>Capture</th><th>₹</th><th>% of capital</th></tr></thead>
-        <tbody>
-          <tr><td>1 Nifty pt (2 lots)</td><td>₹130</td><td class="lo">0.01%</td></tr>
-          <tr><td>30 Nifty pts</td><td>₹3,900</td><td class="hi">0.43%</td></tr>
-          <tr><td>50 Nifty pts</td><td>₹6,500</td><td class="hi">0.72%</td></tr>
-          <tr><td>Nifty week target</td><td>₹14,950</td><td class="hi">1.66%</td></tr>
-          <tr style="border-top:.5px solid var(--border)"><td>1 NG Mini pt</td><td>₹250</td><td class="lo">0.03%</td></tr>
-          <tr><td>10 NG Mini pts</td><td>₹2,500</td><td class="hi">0.28%</td></tr>
-          <tr><td>1 NG Regular pt</td><td>₹1,250</td><td class="hi">0.14%</td></tr>
-          <tr style="border-top:.5px solid var(--border)"><td style="font-weight:700">Full week</td><td style="font-weight:700">₹18,750</td><td class="hi" style="font-weight:700">2.1%</td></tr>
-          <tr><td>Full month</td><td>₹75,000</td><td class="hi">8.3%</td></tr>
-          <tr><td class="danger">5000 qty, 30pt SL</td><td class="danger">₹1,50,000</td><td class="danger">16.7% GONE</td></tr>
-        </tbody>
-      </table>
+      <div class="tbl-wrap">
+        <table class="pt">
+          <thead><tr><th>Capture</th><th>₹</th><th>% of capital</th></tr></thead>
+          <tbody>
+            <tr><td>1 Nifty pt (2 lots)</td><td>₹130</td><td class="lo">0.01%</td></tr>
+            <tr><td>30 Nifty pts</td><td>₹3,900</td><td class="hi">0.43%</td></tr>
+            <tr><td>50 Nifty pts</td><td>₹6,500</td><td class="hi">0.72%</td></tr>
+            <tr><td>Nifty week target</td><td>₹14,950</td><td class="hi">1.66%</td></tr>
+            <tr style="border-top:.5px solid var(--border)"><td>1 NG Mini pt</td><td>₹250</td><td class="lo">0.03%</td></tr>
+            <tr><td>10 NG Mini pts</td><td>₹2,500</td><td class="hi">0.28%</td></tr>
+            <tr><td>1 NG Regular pt</td><td>₹1,250</td><td class="hi">0.14%</td></tr>
+            <tr style="border-top:.5px solid var(--border)"><td style="font-weight:700">Full week</td><td style="font-weight:700">₹18,750</td><td class="hi" style="font-weight:700">2.1%</td></tr>
+            <tr><td>Full month</td><td>₹75,000</td><td class="hi">8.3%</td></tr>
+            <tr><td class="danger">5000 qty · 30pt SL</td><td class="danger">₹1,50,000</td><td class="danger">16.7% !</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;">
-  <div style="font-size:11px;color:var(--muted);">Data auto-saves per week in this browser</div>
-  <div class="btnrow" style="margin:0;">
+<!-- BOTTOM BAR -->
+<div class="bot-bar sec">
+  <div class="bot-note">Auto-saves in this browser per week</div>
+  <div class="btnrow">
     <button class="bsave" onclick="sv()">Save</button>
     <button class="breset" onclick="rW()">New week</button>
   </div>
 </div>
 
-</div>
+</div><!-- /page -->
 
 <script>
 const CAP=900000,MAX_RISK=4500,NT=115,NR=130,GT=3800,WT=18750;
@@ -298,10 +375,15 @@ const IC={
 const fm=v=>'₹'+Math.round(Math.abs(v)).toLocaleString('en-IN');
 
 function sI(i,el){inst=i;document.querySelectorAll('.itab').forEach(t=>t.classList.remove('on'));el.classList.add('on');cT();}
-function sS(s){sess=s;document.getElementById('bDay').className='dnb'+(s==='day'?' day':'');document.getElementById('bNight').className='dnb'+(s==='night'?' night':'');cT();}
+function sS(s){
+  sess=s;
+  document.getElementById('bDay').className='dnb'+(s==='day'?' day':'');
+  document.getElementById('bNight').className='dnb'+(s==='night'?' night':'');
+  cT();
+}
 
 function cT(){
-  const c=IC[inst],sl=Math.max(1,+document.getElementById('slI').value||1),tg=Math.max(1,+document.getElementById('tgI').value||1);
+  const c=IC[inst],sl=Math.max(1,parseFloat(document.getElementById('slI').value)||1),tg=Math.max(1,parseFloat(document.getElementById('tgI').value)||1);
   document.getElementById('iLbl').textContent=c.lbl;
   document.getElementById('rLbl').textContent='₹'+c.rpp+'/lot';
   const rl=sl*c.rpp,rw=tg*c.rpp,rr=rw/rl,bw=Math.round(rl/(rl+rw)*100);
@@ -314,24 +396,31 @@ function cT(){
   let h='';
   for(let l=1;l<=show;l++){
     const r=rl*l,rew=rw*l,ok=r<=MAX_RISK&&l<=c.ml,best=l===rec&&rec>0;
-    const cls=best?'lb best':ok?'lb ok':'lb no';
-    h+=`<div class="${cls}"><div class="lb-lbl">${l} lot${l>1?'s':''}</div><div class="lb-num">${best?'★':l}</div><div class="lb-rs">${fm(rew)}</div><div class="lb-pct">${ok?(r/CAP*100).toFixed(2)+'% risk':'Over limit'}</div></div>`;
+    h+=`<div class="lb ${best?'best':ok?'ok':'no'}">
+      <div class="lb-lbl">${l} lot${l>1?'s':''}</div>
+      <div class="lb-num">${best?'★':l}</div>
+      <div class="lb-rs">${fm(rew)}</div>
+      <div class="lb-pct">${ok?(r/CAP*100).toFixed(2)+'% risk':'Over limit'}</div>
+    </div>`;
   }
   document.getElementById('lgDiv').innerHTML=h;
   const rc=document.getElementById('rcCard');
   rc.className='rc '+(rec===0?'bad':rr<1?'warn':'good');
   const sb=document.getElementById('sBadge');
   if(sess==='day'){sb.className='sbadge sb-n';sb.textContent='Intraday — naked OK';}
-  else{sb.className='sbadge sb-h';sb.textContent='Overnight — hedge before you leave screen';}
+  else{sb.className='sbadge sb-h';sb.textContent='Overnight — hedge before leaving screen';}
   if(document.getElementById('spCb').checked)cSp();
 }
 
-function tSp(){const cb=document.getElementById('spCb');cb.checked=!cb.checked;document.getElementById('spDiv').style.display=cb.checked?'block':'none';if(cb.checked)cSp();}
+function tSp(){
+  const cb=document.getElementById('spCb');cb.checked=!cb.checked;
+  document.getElementById('spDiv').style.display=cb.checked?'block':'none';
+  if(cb.checked)cSp();
+}
 
 function cSp(){
-  const c=IC[inst],w=+document.getElementById('spW').value||200,cr=+document.getElementById('spC').value||80;
-  const pct=Math.round(cr/w*100),lots=inst==='nifty'?2:1;
-  const mx=cr*c.rpp*lots;
+  const c=IC[inst],w=parseFloat(document.getElementById('spW').value)||200,cr=parseFloat(document.getElementById('spC').value)||80;
+  const pct=Math.round(cr/w*100),lots=inst==='nifty'?2:1,mx=cr*c.rpp*lots;
   document.getElementById('spPL').textContent=pct+'%';
   const qb=document.getElementById('spQb');
   qb.style.width=Math.min(100,pct)+'%';
@@ -339,21 +428,21 @@ function cSp(){
   document.getElementById('spMx').textContent=fm(mx);
   document.getElementById('spHf').textContent=fm(mx*.5);
   const v=document.getElementById('spVd');
-  if(pct>=50){v.className='spv pass';v.textContent='Strong credit ('+pct+'%) — take this spread';}
+  if(pct>=50){v.className='spv pass';v.textContent='Strong credit ('+pct+'%) — take it';}
   else if(pct>=40){v.className='spv pass';v.textContent='Acceptable ('+pct+'%) — meets minimum';}
   else if(pct>=25){v.className='spv warn';v.textContent='Thin ('+pct+'%) — consider skipping';}
   else{v.className='spv fail';v.textContent='Too thin ('+pct+'%) — skip';}
 }
 
 function upd(){
-  const nP=Math.max(0,+document.getElementById('nInp').value||0);
-  const gR=Math.max(0,+document.getElementById('gInp').value||0);
+  const nP=Math.max(0,parseFloat(document.getElementById('nInp').value)||0);
+  const gR=Math.max(0,parseFloat(document.getElementById('gInp').value)||0);
   const nR=nP*NR,tot=nR+gR;
   const wp=Math.min(100,Math.round(tot/WT*100));
   const np=Math.min(100,Math.round(nP/NT*100));
   const gp=Math.min(100,Math.round(gR/GT*100));
   document.getElementById('nCap').textContent=nP+' pts';
-  document.getElementById('nRs').textContent=fm(nR);
+  document.getElementById('nRs').textContent=fm(nR)+' captured';
   document.getElementById('nBar').style.width=np+'%';
   const nd=nP>=NT;
   document.getElementById('nStat').className='sh-status '+(nd?'st-done':'st-open');
@@ -367,11 +456,11 @@ function upd(){
   document.getElementById('gStat').textContent=gd?'Shop closed ✓':'Open — setup based';
   document.getElementById('gPctLine').textContent=gp+'% of target · '+(gR/CAP*100).toFixed(2)+'% of capital';
   const sm=[
-    [0,1,'Shops open — let the setup come to you','rgba(255,255,255,.3)'],
-    [1,30,'Getting started — stay with the process','#f0c040'],
-    [30,60,'Momentum building — protect what you have','#f0c040'],
-    [60,85,'More than halfway — be selective now','#78c87a'],
-    [85,100,'Final stretch — one clean trade left','#5ede70'],
+    [0,1,'Shops open — let setup come','rgba(255,255,255,.3)'],
+    [1,30,'Getting started — stay with process','#f0c040'],
+    [30,60,'Momentum building — protect gains','#f0c040'],
+    [60,85,'More than halfway — be selective','#78c87a'],
+    [85,100,'Final stretch — one trade away','#5ede70'],
     [100,101,'MISSION COMPLETE — shops closed','#5ede70']
   ];
   const s=sm.find(x=>wp>=x[0]&&wp<x[1])||sm[5];
@@ -382,14 +471,14 @@ function upd(){
   document.getElementById('hdrPct').style.color=wp>=100?'#5ede70':wp>=60?'#78c87a':wp>0?'#f0c040':'rgba(255,255,255,.35)';
   document.getElementById('wbf').style.width=wp+'%';
   document.getElementById('wbf').style.background=wp>=100?'#5ede70':wp>=60?'var(--gbar)':'#f0c040';
-  document.getElementById('missionDiv').style.display=(nd&&gd)?'block':'none';
+  document.getElementById('mDiv').style.display=(nd&&gd)?'block':'none';
   aS();
 }
 
-function wk(){const d=new Date();d.setHours(0,0,0,0);const dy=d.getDay();d.setDate(d.getDate()-(dy===0?6:dy-1));return'tp3_'+d.toISOString().slice(0,10);}
+function wk(){const d=new Date();d.setHours(0,0,0,0);const dy=d.getDay();d.setDate(d.getDate()-(dy===0?6:dy-1));return'tp4_'+d.toISOString().slice(0,10);}
 function aS(){try{localStorage.setItem(wk(),JSON.stringify({n:document.getElementById('nInp').value,g:document.getElementById('gInp').value}));}catch(e){}}
-function sv(){aS();}
-function rW(){if(!confirm('Start a new week?'))return;document.getElementById('nInp').value=0;document.getElementById('gInp').value=0;try{localStorage.removeItem(wk());}catch(e){}upd();}
+function sv(){aS();const b=document.querySelector('.bsave');b.textContent='Saved ✓';setTimeout(()=>b.textContent='Save',1500);}
+function rW(){if(!confirm('Start a new week? This clears the current week.'))return;document.getElementById('nInp').value=0;document.getElementById('gInp').value=0;try{localStorage.removeItem(wk());}catch(e){}upd();}
 function lS(){try{const r=localStorage.getItem(wk());if(r){const d=JSON.parse(r);document.getElementById('nInp').value=d.n||0;document.getElementById('gInp').value=d.g||0;upd();}}catch(e){}}
 function wkLabel(){const d=new Date(),dy=d.getDay();const m=new Date(d);m.setDate(d.getDate()-(dy===0?6:dy-1));const f=new Date(m);f.setDate(m.getDate()+4);const fmt=x=>x.toLocaleDateString('en-IN',{day:'numeric',month:'short'});document.getElementById('hdrWeek').textContent=fmt(m)+' – '+fmt(f);}
 wkLabel();lS();cT();
