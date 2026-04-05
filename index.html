@@ -174,11 +174,6 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;cur
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-logo">Trading Plan</div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
-      <button onclick="changeWk(-1)" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:12px;width:22px;height:22px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;touch-action:manipulation;">‹</button>
-      <div class="hdr-week" id="hdrWeek" style="padding:0;">—</div>
-      <button onclick="changeWk(1)" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:12px;width:22px;height:22px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;touch-action:manipulation;">›</button>
-    </div>
   </div>
   <div class="hdr-center">
     <div class="hdr-score" id="hdrScore">₹0</div>
@@ -287,6 +282,10 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;cur
       <div class="struct-line">
         <span style="font-size:12px;color:var(--muted);">Structure:</span>
         <span class="sbadge sb-n" id="sBadge">Intraday — naked OK</span>
+      </div>
+      <div id="dailyRiskBox" style="margin-top:12px;border-radius:10px;padding:12px 14px;background:rgba(255,255,255,.55);">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;">Daily ₹5,000 risk budget</div>
+        <div id="dailyRiskInner"></div>
       </div>
     </div>
 
@@ -411,7 +410,7 @@ function cT(){
   let h='';
   for(let l=1;l<=c.maxLots;l++){
     const r=rl*l, rew=rw*l, ok=r<=MAX_RISK, best=l===rec&&rec>0;
-    h+=`<div class="lb ${best?'best':ok?'ok':'no'}">
+    h+=`<div class="lb ${best?'best':ok?'ok':'no'}" onclick="selectLot(${l})" id="lotBtn${l}" style="cursor:pointer;">
       <div class="lb-lbl">${l} lot${l>1?'s':''}</div>
       <div class="lb-num">${best?'★':l}</div>
       <div class="lb-rs">${fm(rew)}</div>
@@ -425,7 +424,63 @@ function cT(){
   if(sess==='day'){sb.className='sbadge sb-n';sb.textContent='Intraday — naked OK';}
   else{sb.className='sbadge sb-h';sb.textContent='Overnight — hedge before leaving screen';}
 
+  updateDailyRisk(rl, rec);
   if(document.getElementById('spCb').checked) cSp();
+}
+
+let selectedLot=0;
+
+function selectLot(l){
+  selectedLot=l;
+  // highlight selected
+  const c=IC[inst];
+  for(let i=1;i<=c.maxLots;i++){
+    const btn=document.getElementById('lotBtn'+i);
+    if(!btn)continue;
+    if(i===l){
+      btn.style.outline='2.5px solid var(--text)';
+      btn.style.outlineOffset='2px';
+    } else {
+      btn.style.outline='none';
+    }
+  }
+  const sl=Math.max(0.5,parseFloat(document.getElementById('slI').value)||0.5);
+  const rl=sl*c.rpp;
+  updateDailyRisk(rl, l);
+}
+
+function updateDailyRisk(rl, lots){
+  const DAILY=5000;
+  const risk=rl*lots;
+  const box=document.getElementById('dailyRiskBox');
+  const inner=document.getElementById('dailyRiskInner');
+
+  if(risk>DAILY){
+    box.style.background='rgba(250,236,236,.85)';
+    inner.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--r);">Exceeds daily limit — do not take this trade</div>
+      <div style="font-size:11px;color:var(--r);margin-top:4px;">Risk at ${lots} lot${lots>1?'s':''}: ${fm(risk)} · Your daily limit is ₹5,000.</div>`;
+  } else {
+    const remaining=DAILY-risk;
+    const moreTrades=Math.floor(remaining/risk);
+    const capped=Math.min(moreTrades, 2); // max 3 trades total, this is trade 1
+    let msg='', color='', sub='';
+    if(capped===0){
+      color='var(--r)';
+      msg='No more trades today after this.';
+      sub=`This trade uses ${fm(risk)}. Nothing left for another trade at same size.`;
+    } else if(capped===1){
+      color='var(--a)';
+      msg='1 more trade allowed today.';
+      sub=`This trade uses ${fm(risk)}. Remaining budget: ${fm(remaining)}.`;
+    } else {
+      color='var(--g)';
+      msg='2 more trades allowed today.';
+      sub=`This trade uses ${fm(risk)}. Remaining budget: ${fm(remaining)}.`;
+    }
+    box.style.background='rgba(255,255,255,.55)';
+    inner.innerHTML=`<div style="font-size:13px;font-weight:700;color:${color}">${msg}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">${sub}</div>`;
+  }
 }
 
 function tSp(){
@@ -501,28 +556,10 @@ function upd(){
   aS();
 }
 
-let weekOffset=0;
-
-function changeWk(dir){
-  weekOffset+=dir;
-  wkLabel();
-  // reset sliders, then load saved data for new week
-  document.getElementById('nSlider').value=0;
-  document.getElementById('gSlider').value=0;
-  upd();
-  lS();
-}
-
-function getMonday(offset){
-  const d=new Date();d.setHours(0,0,0,0);
-  const dy=d.getDay();
-  d.setDate(d.getDate()-(dy===0?6:dy-1)+(offset*7));
-  return d;
-}
-
 function wk(){
-  const m=getMonday(weekOffset);
-  return 'tp6_'+m.toISOString().slice(0,10);
+  const d=new Date();d.setHours(0,0,0,0);
+  const dy=d.getDay();d.setDate(d.getDate()-(dy===0?6:dy-1));
+  return 'tp6_'+d.toISOString().slice(0,10);
 }
 
 function aS(){
@@ -530,10 +567,8 @@ function aS(){
 }
 
 function sv(){
-  aS();
-  const b=document.querySelector('.bsave');
-  b.textContent='Saved ✓';
-  setTimeout(()=>b.textContent='Save',1500);
+  aS();const b=document.querySelector('.bsave');
+  b.textContent='Saved ✓';setTimeout(()=>b.textContent='Save',1500);
 }
 
 function rW(){
@@ -547,23 +582,12 @@ function rW(){
 function lS(){
   try{
     const r=localStorage.getItem(wk());
-    if(r){
-      const d=JSON.parse(r);
-      document.getElementById('nSlider').value=d.n||0;
-      document.getElementById('gSlider').value=d.g||0;
-    }
+    if(r){const d=JSON.parse(r);document.getElementById('nSlider').value=d.n||0;document.getElementById('gSlider').value=d.g||0;}
     upd();
   }catch(e){upd();}
 }
 
-function wkLabel(){
-  const m=getMonday(weekOffset);
-  const f=new Date(m);f.setDate(m.getDate()+4);
-  const fmt=x=>x.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-  document.getElementById('hdrWeek').textContent=fmt(m)+' – '+fmt(f);
-}
-
-wkLabel();lS();cT();
+lS();cT();
 </script>
 </body>
 </html>
